@@ -1,0 +1,11 @@
+numpy
+matplotlib
+pytest
+# P2+ visuals (optional)
+pygame
+# P5 stretch
+pulp
+# P11
+torch
+# P12
+gymnasium
