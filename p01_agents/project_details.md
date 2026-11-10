@@ -83,30 +83,62 @@ With 100 tries, 10x10 is reliable up to about 0.30.
 
 ---
 
-## GridWorld (to design)
+## GridWorld (designed, not yet built)
 
-Decided so far:
-- World authority: agents propose actions; the world applies them and owns the true state.
-- Actions: up, down, left, right, clean.
-- Every action costs 1 step (successful move, bump, clean, or cleaning a clean cell).
-- Episode ends when all dirt is gone, or after 4 * n^2 steps.
-- Score = 100 x dirt cleaned - 1 x steps.
-- Percept given to every agent after each step:
-  - is my current cell dirty?
-  - did my last move bump into a wall?
+The simulation for one agent on one Map. Agents propose actions; the world
+applies them and owns the true state. The Map is never changed.
 
-Open questions (answer before coding):
-1. What it holds: the Map, the agent's current position, a set of remaining dirt
-   positions (so the Map is never changed), the step count, the score?
-2. How actions are represented (strings, constants, Enum), and what happens with an unknown action.
-3. Exact `step(action)` rules:
-   - move: inside the grid and not a wall -> move; otherwise stay and set bumped
-   - clean: remove the current cell from the dirt set if it is there
-4. The percept's form (tuple? dict?).
-5. What `step` does if called after the episode has ended.
-6. Score computed on the fly, or tracked as the episode runs?
-7. How the goal-based agent receives the dirt and wall positions at the start
-   without being able to read or change the world's true state.
+What it holds:
+- `map`: the Map (read only)
+- `position`: the agent's current `(row, col)`, starting at `map.start`
+- `dirt`: a set of remaining dirt positions, copied from the Map at the start
+- `steps`: actions taken so far
+- `cleaned`: dirt cells cleaned so far
+
+Derived on the fly (properties, never stored):
+- `score` = 100 x `cleaned` - `steps`
+- `done` = no dirt left, or `steps` has reached the step limit of 4 * n^2
+
+Actions: an Enum `Action` with `UP`, `DOWN`, `LEFT`, `RIGHT`, `CLEAN`.
+- Anything that is not an `Action` (e.g. the string `"up"`) raises `ValueError`.
+
+`step(action)` rules:
+- Calling `step` when `done` is True raises an error (no silent no-op).
+- Every action adds 1 to `steps`: a successful move, a bump, a clean,
+  and cleaning an already clean cell.
+- Move: if the target cell is inside the grid and not a wall, move there and
+  `bumped` is False. Otherwise stay put and `bumped` is True.
+- Clean: if the current cell is in `dirt`, remove it and add 1 to `cleaned`.
+  Otherwise nothing changes (except `steps`). `bumped` is False.
+- Returns the percept after the action.
+
+Percept: a tuple `(dirty, bumped)`
+- `dirty`: is the agent's current cell dirty (after a move, the new cell)?
+- `bumped`: did the last action bump into a wall? Always False after a clean.
+- The world also provides the current percept before the first action,
+  so an agent knows whether its starting cell is dirty.
+
+Knowledge package (for the goal-based agent only):
+- Built by a GridWorld method (e.g. `initial_knowledge()`) and passed to the
+  agent by the setup code. The agent never receives the GridWorld itself.
+- Contains: start agent position, dirt positions, wall positions, grid size.
+- Dirt and walls are `frozenset`s of `(row, col)`: read only, and separate from
+  the world's own dirt set, so the agent cannot change the true state.
+- The agent keeps its own copy of what is left as it cleans.
+- The other agents get no package: that difference is the observability
+  difference for the write-up.
+
+Tests to write before the class (on `3x3_map.txt`):
+- move into a wall -> same position, `bumped` True, `steps` + 1
+- move off the edge of the grid -> same as a wall
+- clean on dirt -> dirt removed, `cleaned` + 1, score changes by 100 - 1
+- clean on a clean cell -> only `steps` changes
+- cleaning the last dirt -> `done` is True; `step` after that raises
+- reaching the step limit -> `done` is True
+- an invalid action raises `ValueError`
+- the first percept reports whether the start cell is dirty
+- the knowledge package matches the Map, and changing it raises
+- the Map is unchanged after a whole episode
 
 ---
 
@@ -129,7 +161,8 @@ Open questions (answer before coding):
   - Frontier empty -> exploration done; it knows it has finished.
 
 ### Goal-based agent
-- Knows at the start: its position, every dirt position, every wall.
+- Knows at the start (from the GridWorld knowledge package): its position,
+  every dirt position, every wall, and the grid size.
 - Action selection: BFS shortest path to the nearest dirt, follow it, clean, repeat.
 - Greedy nearest-dirt is not always the shortest total tour (that is the TSP, project P4).
 
