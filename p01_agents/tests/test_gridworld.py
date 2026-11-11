@@ -201,3 +201,41 @@ def test_percept():
     world.step(Action.CLEAN)
     assert world.percept() == (False, False)
     assert world.steps == 6
+
+
+# ======================================================================
+# render
+# ======================================================================
+
+def test_render_start():
+    world = GridWorld(Map.from_file(MAPS / "3x3_map.txt"))
+    assert world.render() == "O _ _\n_ # _\n_ _ *"
+
+# the agent is drawn over the dirt it is standing on
+def test_render_agent_on_dirt():
+    world = GridWorld(Map.from_file(MAPS / "3x3_map.txt"))
+    for action in [Action.DOWN, Action.DOWN, Action.RIGHT, Action.RIGHT]:
+        world.step(action)
+    assert world.render() == "_ _ _\n_ # _\n_ _ O"
+
+# 4x4 map: dirt at (2,2) and (3,3), so the episode continues after one clean.
+# Once the agent steps off a cleaned cell, that cell is drawn as "_".
+def test_render_cleaned_cell():
+    world = GridWorld(Map.from_file(MAPS / "4x4_map.txt"))
+    assert world.render() == "_ O _ _\n# # # _\n# _ * _\n# _ _ *"
+
+    # (0,1) -> (0,3) -> (2,3) -> (2,2), clean, then step back to (2,3)
+    for action in [Action.RIGHT, Action.RIGHT, Action.DOWN, Action.DOWN,
+                   Action.LEFT, Action.CLEAN, Action.RIGHT]:
+        world.step(action)
+    assert world.render() == "_ _ _ _\n# # # _\n# _ _ O\n# _ _ *"
+
+# render() only reads: the Map must still show the dirt the world has cleaned
+def test_render_does_not_change_map():
+    world = GridWorld(Map.from_file(MAPS / "3x3_map.txt"))
+    for action in [Action.DOWN, Action.DOWN, Action.RIGHT, Action.RIGHT, Action.CLEAN]:
+        world.step(action)
+    world.render()
+    assert world.world_map.grid == [["_", "_", "_"],
+                                    ["_", "#", "_"],
+                                    ["_", "_", "*"]]

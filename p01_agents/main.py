@@ -1,6 +1,9 @@
 """P1: Agent simulator. Run with: python -m p01_agents.main"""
 import argparse
 from . import Map as mp
+from .GridWorld import GridWorld
+from .Agent import ReflexAgent
+from .simulation import run_episode, make_watcher
 
 def main():
     parser = argparse.ArgumentParser()
@@ -9,7 +12,18 @@ def main():
     parser.add_argument("--seed", type=int, help="generate a map from a seed")
     parser.add_argument("--walls", type=float, help="wall density")
     parser.add_argument("--dirt", type=float, help="dirt density")
+    parser.add_argument("--agent", choices=["reflex"], default="reflex",
+                        help="which agent to run (default: reflex)")
+    parser.add_argument("--agent-seed", type=int, default=0,
+                        help="seed for the agent's random choices (default: 0)")
+    parser.add_argument("--watch", action="store_true",
+                        help="animate the episode in the terminal")
+    parser.add_argument("--delay", type=float, default=0.2,
+                        help="seconds between frames when watching (default: 0.2)")
     args = parser.parse_args()
+
+    if args.delay < 0:
+        parser.error("--delay: must not be negative")
 
     world_map = None
     if args.map:
@@ -56,7 +70,25 @@ def main():
         except ValueError as e:
             parser.error(str(e))
     
-    world_map.displayMap()
+    # run one episode of the chosen agent on the map
+    world = GridWorld(world_map)
+    if args.agent == "reflex":
+        agent = ReflexAgent(args.agent_seed)
+
+    if args.watch:
+        on_step = make_watcher(args.delay)
+    else:
+        print(world.render())
+        on_step = None
+
+    result = run_episode(world, agent, on_step)
+
+    print()
+    print(f"agent:   {args.agent} (seed {args.agent_seed})")
+    print(f"score:   {result.score}")
+    print(f"steps:   {result.steps}/{world.step_limit}")
+    print(f"cleaned: {result.cleaned}/{result.total_dirt}")
+    print("ended:   " + ("ran out of steps" if result.hit_limit else "all dirt cleaned"))
 
 
 if __name__ == "__main__":

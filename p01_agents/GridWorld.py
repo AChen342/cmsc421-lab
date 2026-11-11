@@ -1,6 +1,7 @@
 from .Map import Map
 from enum import Enum
 from collections import namedtuple
+import copy
 
 class Action(Enum):
     LEFT = 1
@@ -105,3 +106,18 @@ class GridWorld:
 
         return Knowledge(start=self.world_map.start, dirt=frozenset(dirt_positions),
                          walls=frozenset(wall_positions), size=len(grid))
+
+    def render(self):
+        current_state = copy.deepcopy(self.world_map.grid)
+
+        # check dirt cells
+        for i, row in enumerate(current_state):
+            for j, cell in enumerate(row):
+                if cell == "*" and not (i, j) in self.dirty_cells:
+                    current_state[i][j] = "_"
+
+        # place agent
+        agent_row, agent_col = self.agent_position
+        current_state[agent_row][agent_col] = "O"
+
+        return "\n".join(" ".join(row) for row in current_state)
