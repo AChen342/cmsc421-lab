@@ -2,7 +2,7 @@
 import argparse
 from . import Map as mp
 from .GridWorld import GridWorld
-from .Agent import ReflexAgent
+from .Agent import ReflexAgent, ModelBasedAgent, GoalBasedAgent
 from .simulation import run_episode, make_watcher
 
 def main():
@@ -12,8 +12,8 @@ def main():
     parser.add_argument("--seed", type=int, help="generate a map from a seed")
     parser.add_argument("--walls", type=float, help="wall density")
     parser.add_argument("--dirt", type=float, help="dirt density")
-    parser.add_argument("--agent", choices=["reflex"], default="reflex",
-                        help="which agent to run (default: reflex)")
+    parser.add_argument("--agent", choices=["reflex", "model", "goal"], default="reflex",
+                        help="which agent to run: reflex, model or goal (default: reflex)")
     parser.add_argument("--agent-seed", type=int, default=0,
                         help="seed for the agent's random choices (default: 0)")
     parser.add_argument("--watch", action="store_true",
@@ -74,6 +74,11 @@ def main():
     world = GridWorld(world_map)
     if args.agent == "reflex":
         agent = ReflexAgent(args.agent_seed)
+    elif args.agent == "model":
+        agent = ModelBasedAgent(args.agent_seed)
+    elif args.agent == "goal":
+        # knows the whole map; uses no randomness, so --agent-seed has no effect
+        agent = GoalBasedAgent(world.initial_knowledge())
 
     if args.watch:
         on_step = make_watcher(args.delay)
