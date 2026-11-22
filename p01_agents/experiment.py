@@ -1,6 +1,6 @@
-from .GridWorld import GridWorld
-from .Map import Map
-from .Agent import ReflexAgent, ModelBasedAgent, GoalBasedAgent
+from .gridworld import GridWorld
+from .map import Map
+from .agent import ReflexAgent, ModelBasedAgent, GoalBasedAgent
 from .simulation import run_episode, make_watcher
 import csv
 import os
@@ -21,7 +21,7 @@ def run_and_track(world, agent):
     result = run_episode(world, agent, on_step=lambda w: visited.add(w.agent_position))
 
     grid = world.world_map.grid
-    open_cells = len(grid) ** 2 - Map.countWalls(grid)
+    open_cells = len(grid) ** 2 - Map.count_walls(grid)
     explored = 100 * len(visited) / open_cells
     return result, explored
 

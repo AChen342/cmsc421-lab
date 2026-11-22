@@ -24,8 +24,8 @@ class Map:
 
     # load a map from a text file: _ empty, * dirt, # wall, O agent start
     @classmethod
-    def from_file(cls, mapFile):
-        with open(mapFile, encoding="utf-8") as mpf:
+    def from_file(cls, map_file):
+        with open(map_file, encoding="utf-8") as mpf:
             lines = mpf.read().rstrip().splitlines()
 
         # convert map file into a matrix
@@ -47,8 +47,8 @@ class Map:
             grid.append(row)
 
         # the following checks if map is valid
-        cls.isEmptyMapFile(grid)
-        cls.isSquareMatrix(grid)
+        cls.is_empty_map_file(grid)
+        cls.is_square_matrix(grid)
         if len(grid) == 1:
             raise ValueError(f"map is too small, must be at least 2x2 matrix")
 
@@ -134,13 +134,13 @@ class Map:
 
     # makes sure the map file is not empty
     @staticmethod
-    def isEmptyMapFile(grid):
+    def is_empty_map_file(grid):
         if len(grid) == 0:
             raise ValueError(f"Map is empty")
 
     # makes sure map is nxn
     @staticmethod
-    def isSquareMatrix(grid):
+    def is_square_matrix(grid):
         # number of rows; every row must have this many cells
         col_size = len(grid)
 
@@ -152,7 +152,7 @@ class Map:
     @classmethod
     def is_connected(cls, grid, agent_pos):
         reached_cells = cls.reachable_cells(grid, agent_pos)
-        if len(reached_cells) != (len(grid)**2) - cls.countWalls(grid):
+        if len(reached_cells) != (len(grid)**2) - cls.count_walls(grid):
             return False
 
         return True
@@ -191,24 +191,24 @@ class Map:
 
     # helper to count number of walls
     @staticmethod
-    def countWalls(grid):
-        numWalls = 0
+    def count_walls(grid):
+        num_walls = 0
         for row in grid:
             for cell in row:
                 if cell == "#":
-                    numWalls+=1
+                    num_walls+=1
 
-        return numWalls
+        return num_walls
 
     # ------------------------------------------------------------------
     # Display
     # ------------------------------------------------------------------
 
     # print the map with the agent shown as O (read only: grid is not changed)
-    def displayMap(self):
+    def display_map(self):
         agent_row, agent_col = self.start
-        displayCopy = copy.deepcopy(self.grid)
-        displayCopy[agent_row][agent_col] = "O"
+        display_copy = copy.deepcopy(self.grid)
+        display_copy[agent_row][agent_col] = "O"
 
-        for row in displayCopy:
+        for row in display_copy:
             print(*row)

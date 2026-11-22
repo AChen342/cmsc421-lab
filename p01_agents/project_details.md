@@ -4,7 +4,7 @@ Three vacuum agents (simple reflex, model-based, goal-based) clean a grid world.
 Compare them by score over 100 random 10x10 maps.
 
 Pieces:
-- `Map` (`Map.py`): the fixed layout. **Done and tested** (`tests/test_map.py`).
+- `Map` (`map.py`): the fixed layout. **Done and tested** (`tests/test_map.py`).
 - `GridWorld`: the simulation (agent position, dirt left, steps, score). **To design.**
 - Agents: the three agent types. **To build after GridWorld.**
 

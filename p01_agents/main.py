@@ -1,8 +1,8 @@
 """P1: Agent simulator. Run with: python -m p01_agents.main"""
 import argparse
-from . import Map as mp
-from .GridWorld import GridWorld
-from .Agent import ReflexAgent, ModelBasedAgent, GoalBasedAgent
+from . import map as mp
+from .gridworld import GridWorld
+from .agent import ReflexAgent, ModelBasedAgent, GoalBasedAgent
 from .simulation import run_episode, make_watcher
 
 def main():

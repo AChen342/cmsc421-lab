@@ -1,8 +1,8 @@
 import os
 import time
 from collections import namedtuple
-from .GridWorld import GridWorld
-from .Agent import Agent
+from .gridworld import GridWorld
+from .agent import Agent
 
 EpisodeResult = namedtuple(
     "EpisodeResult", ["score", "steps", "cleaned", "total_dirt", "hit_limit"]

@@ -1,6 +1,6 @@
 from pathlib import Path
 import pytest
-from p01_agents.Map import Map
+from p01_agents.map import Map
 
 MAPS = Path(__file__).parent / "maps"
 
@@ -16,14 +16,14 @@ def count(grid, symbol):
 
 
 # ======================================================================
-# Grid helpers: countWalls, reachable_cells
+# Grid helpers: count_walls, reachable_cells
 # ======================================================================
 
 def test_count_walls():
     grid = [["_", "_", "_"],
             ["_", "#", "#"],
             ["_", "_", "#"]]
-    assert Map.countWalls(grid) == 3
+    assert Map.count_walls(grid) == 3
 
 def test_reachable_cells_all_open():
     grid = [["_", "_", "_"],
@@ -146,13 +146,13 @@ def test_too_many_issues():
 
 
 # ======================================================================
-# displayMap
+# display_map
 # ======================================================================
 
-# displayMap() should not modify the original map, read only access
+# display_map() should not modify the original map, read only access
 def test_display_map():
     m = Map.from_file(MAPS / "3x3_map.txt")
-    m.displayMap()
+    m.display_map()
     assert m.start == (0, 0)
     assert m.grid == GRID_3X3
 

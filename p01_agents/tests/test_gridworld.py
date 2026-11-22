@@ -1,7 +1,7 @@
 from pathlib import Path
 import pytest
-from p01_agents.Map import Map
-from p01_agents.GridWorld import GridWorld, Action
+from p01_agents.map import Map
+from p01_agents.gridworld import GridWorld, Action
 
 MAPS = Path(__file__).parent / "maps"
 

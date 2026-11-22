@@ -1,8 +1,8 @@
 from pathlib import Path
 import pytest
-from p01_agents.Map import Map
-from p01_agents.GridWorld import GridWorld, Action, DIRECTION
-from p01_agents.Agent import ReflexAgent, ModelBasedAgent, GoalBasedAgent, Agent
+from p01_agents.map import Map
+from p01_agents.gridworld import GridWorld, Action, DIRECTION
+from p01_agents.agent import ReflexAgent, ModelBasedAgent, GoalBasedAgent, Agent
 from p01_agents.simulation import run_episode
 
 MAPS = Path(__file__).parent / "maps"

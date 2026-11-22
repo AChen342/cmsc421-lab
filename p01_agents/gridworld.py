@@ -1,4 +1,4 @@
-from .Map import Map
+from .map import Map
 from enum import Enum
 from collections import namedtuple
 import copy

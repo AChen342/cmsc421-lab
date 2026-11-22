@@ -1,6 +1,6 @@
 import random, copy
 from collections import deque
-from .GridWorld import Action, DIRECTION, Knowledge
+from .gridworld import Action, DIRECTION, Knowledge
 
 #-----------------------------------------------------
 # Base class for Agents
